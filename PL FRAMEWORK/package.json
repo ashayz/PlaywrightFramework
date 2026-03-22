@@ -1,0 +1,50 @@
+{
+  "name": "gep-automation-playwright",
+  "version": "1.0.0",
+  "description": "Playwright automation framework for GEP application using TypeScript and Page Object Model with comprehensive smoke testing capabilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "report": "npx playwright show-report",
+    "install-deps": "npx playwright install",
+    "test:chrome": "npx playwright test --project='Google Chrome'",
+    "test:edge": "npx playwright test --project='Microsoft Edge'",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:all-browsers": "npx playwright test",
+    "testtag": "npx cross-env CLIENT=SwagLabs ENV=QC playwright test --headed --project=chromium -g",
+    "codegen": "npx playwright codegen",
+    "trace": "npx playwright show-trace"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "automation",
+    "testing",
+    "page-object-model",
+    "smoke-testing",
+    "gep",
+    "multi-application"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^24.9.1",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^17.2.3",
+    "eslint": "^8.57.1",
+    "eslint-plugin-playwright": "^0.18.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.0",
+    "yargs": "^17.7.2"
+  }
+}

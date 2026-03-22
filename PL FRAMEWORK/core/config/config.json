@@ -1,0 +1,39 @@
+{
+  "Valeo": {
+    "UAT_LEO": {
+      "URL": "https://nexxeuat.gep.com",
+      "ITEMMDMSUPERVISORUSER": "UHJvZHVjdFRlc3Qy",
+      "ITEMMDMMANAGERUSER": "UHJvZHVjdFRlc3Qx",
+      "PASSWORD": "K3BJbUFRU0tyM2c="
+    },
+    "QC_LEO": {
+      "URL": "https://quantumqc.gep.com",
+      "ITEMMDMSUPERVISORUSER": "QXV0b21hdGlvblVzZXJWYWxlbzIwMjU=",
+      "ITEMMDMMANAGERUSER": "cXVhbnR1bXFjYWRtaW4=",
+      "PASSWORD": "MlpXaDlYdU9oVWc="
+    }
+  },
+  "CaterpillarDirect":{
+  	"UAT_LEO":{
+  		"URL": "https://nexxeuat.gep.com",
+        "ITEMMDMUSER": "Y2F0ZXJwaWxsYXIxLmFkbWluQGdlcC5jb20=",
+        "PASSWORD": "K3BJbUFRU0tyM2c="
+  	},
+  	"QC_LEO":{
+  		"URL": "https://quantumqc.gep.com",
+  		"ITEMMDMUSER": "Y2F0ZXJwaWxsYXJkaXJlY3QuYWRtaW5AZ2VwLmNvbQ==",
+  		"PASSWORD": "MlpXaDlYdU9oVWc="
+  	}
+  },
+  "SwagLabs":{
+    "QC":{
+      "URL": "https://www.saucedemo.com/",
+      "STDUSER":"standard_user",
+      "LOCKEDUSER":"locked_out_user",
+      "PERFORMANCEUSER":"performance_glitch_user",
+      "ERRORUSER":"error_user",
+      "VISUALUSER":"visual_user",
+      "PASSWORD": "secret_sauce"
+    }
+  }
+}

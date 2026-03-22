@@ -1,0 +1,22 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="3.883095999998972">
+<testsuite name="SwagLabsTest.spec.ts" timestamp="2026-03-22T14:48:32.492Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.61" errors="0">
+<testcase name="Test Scenarios for Swag Labs @SwagLabsTestSuite › [@AddItemsAndCheckout]TC001 - Add Items to Cart and Checkout" classname="SwagLabsTest.spec.ts" time="1.61">
+<system-out>
+<![CDATA[Client: SwagLabs, Env: QC, User: standard_user, URL: https://www.saucedemo.com/
+Logged in successfully
+[ [33m29.99[39m ]
+Added Sauce Labs Backpack to cart
+Clicked back to products
+[ [33m29.99[39m, [33m9.99[39m ]
+Added Sauce Labs Bike Light to cart
+Clicked back to products
+Verified shopping cart badge count is equal to number of Products Added to Cart
+Clicked on shopping cart
+Verified Products added to cart are visible in shopping cart
+User has checked out successfully
+Verified total price is correct
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,186 @@
+# Azure DevOps Pipeline for Playwright Tests - Item MDM Valeo
+# This pipeline runs automated tests with configurable parameters
+
+trigger: none  # Manual trigger only
+
+parameters:
+  - name: 'DEnvironment'
+    displayName: 'Environment Name'
+    default: 'QC_LEO'
+    type: string
+    values:
+      - 'QC_LEO'
+      - 'UAT_LEO'
+      - 'PROD_LEO'
+  - name: 'DClient'
+    displayName: 'Client Name'
+    default: 'Valeo'
+    type: string
+    values:
+      - 'Valeo'
+      - 'CaterpillarDirect'
+  - name: 'DDocumentName'
+    displayName: 'Document Name'
+    default: 'ItemMDM'
+    type: string
+  - name: 'tags'
+    displayName: 'Test Tags'
+    default: '@ItemMDMSanitySuite'
+    type: string
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  NODE_VERSION: '20.x'
+  CLIENT: ${{ parameters.DClient }}
+  ENV: ${{ parameters.DEnvironment }}
+  TEST_TAGS: ${{ parameters.tags }}
+  DOCUMENT: ${{ parameters.DDocumentName }}
+
+stages:
+- stage: Test
+  displayName: 'Run Playwright Tests'
+  jobs:
+  - job: PlaywrightTests
+    displayName: 'Playwright Test Execution'
+    timeoutInMinutes: 60
+    
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(NODE_VERSION)'
+      displayName: 'Install Node.js $(NODE_VERSION)'
+
+    - script: npm install
+      displayName: 'Install dependencies'
+      workingDirectory: $(System.DefaultWorkingDirectory)
+
+    - script: npx playwright install --with-deps chromium
+      displayName: 'Install Playwright Chromium browser'
+      
+    - script: cp .env.example .env
+      displayName: 'Setup Environment File'
+
+    - script: npx cross-env CLIENT=$(CLIENT) ENV=$(ENV) playwright test --project=chromium -g "$(TEST_TAGS)"
+      displayName: 'Run Playwright tests - $(CLIENT) - $(ENV) - $(TEST_TAGS)'
+      continueOnError: true
+
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test-results/junit.xml'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+        testRunTitle: 'Playwright Tests - $(CLIENT) - $(ENV)'
+      displayName: 'Publish test results'
+
+    - task: PublishPipelineArtifact@1
+      condition: succeededOrFailed()
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/playwright-report'
+        artifact: 'playwright-report-$(CLIENT)-$(ENV)'
+        publishLocation: 'pipeline'
+      displayName: 'Publish Playwright HTML Report'
+
+    - task: PublishPipelineArtifact@1
+      condition: failed()
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/test-results'
+        artifact: 'test-results-$(CLIENT)-$(ENV)'
+        publishLocation: 'pipeline'
+      displayName: 'Publish test artifacts on failure'
+
+    - powershell: |
+        $jsonPath = "$(System.DefaultWorkingDirectory)\test-results\results.json"
+
+        Write-Host "Reading test results from: $jsonPath"
+
+        $data = Get-Content $jsonPath -Raw | ConvertFrom-Json
+
+        $total = 0
+        $passed = 0
+        $failed = 0
+
+        foreach ($suite in $data.suites) {
+            foreach ($innerSuite in $suite.suites) {
+                foreach ($spec in $innerSuite.specs) {
+                    foreach ($test in $spec.tests) {
+
+                        $status = $test.results[0].status
+                        $total++
+
+                        if ($status -eq "passed") { $passed++ }
+                        elseif ($status -eq "failed") { $failed++ }
+                    }
+                }
+            }
+        }
+
+        # Calculate percentages
+        if ($total -gt 0) {
+            $passPercent = [math]::Round(($passed / $total) * 100, 2)
+            $failPercent = [math]::Round(($failed / $total) * 100, 2)
+        }
+        else {
+            $passPercent = 0
+            $failPercent = 0
+        }
+
+        Write-Host "Total Tests: $total"
+        Write-Host "Passed Tests: $passed ($passPercent`%)"
+        Write-Host "Failed Tests: $failed ($failPercent`%)"
+
+        # Export variables for next tasks
+        Write-Host "##vso[task.setvariable variable=TOTAL_TESTS]$total"
+        Write-Host "##vso[task.setvariable variable=PASSED_TESTS]$passed"
+        Write-Host "##vso[task.setvariable variable=FAILED_TESTS]$failed"
+        Write-Host "##vso[task.setvariable variable=PASSED_PERCENT]$passPercent"
+        Write-Host "##vso[task.setvariable variable=FAILED_PERCENT]$failPercent"
+      displayName: "Extract Playwright test counts"
+
+    - task: AzureKeyVault@2
+      inputs:
+        azureSubscription: 'Dev-Direct (DESA)'
+        KeyVaultName: 'NEXXEDEVDIRECT-VSTSKey'
+        SecretsFilter: '*'
+        RunAsPreJob: false
+    - task: SendGrid@1
+      inputs:
+        sendgridkey: '$(sendgridapikey)'
+        to: 'roshan.lalwani@gep.com,Ashay.zemse@gep.com,Shameem.Akhtar@gep.com'
+        from: 'Nexxe_Automation@gep.com'
+        subject: 'NEXXE_$(DOCUMENT)_$(CLIENT)_${{ parameters.DEnvironment }} - $(Agent.JobStatus) [Total: $(TOTAL_TESTS); Passed: $(PASSED_TESTS); Failed: $(FAILED_TESTS)]'
+        htmlbody: |
+          <html>
+          <body>
+          <br>
+          <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)">
+            Click here to open the ADO Pipeline
+          </a>
+          <h3>Test Execution Summary</h3>
+          
+          <table border="1";style="width: 50%; background-color: #f2f2f2; text-align: center;">
+          <tr>
+          <td style="background-color: #dbe9ef;"> Status </td>
+          <td style="background-color: #dbe9ef;"> Count </td>
+          <td style="background-color: #dbe9ef;"> Percentage </td>
+          </tr>
+          <tr>
+          <td style="background-color: #daeddc;"> Pass </td>
+          <td style="background-color: #daeddc;"> $(PASSED_TESTS) </td>
+          <td style="background-color: #daeddc;"> $(PASSED_PERCENT) % </td>
+          </tr>
+          <tr>
+          <td style="background-color: #f0ddd9;"> Fail </td>
+          <td style="background-color: #f0ddd9;"> $(FAILED_TESTS) </td>
+          <td style="background-color: #f0ddd9;"> $(FAILED_PERCENT) % </td>
+          </tr>
+          </table>
+          </body>
+          </html>
+        
+        addattachment: true
+        attachment: '$(System.DefaultWorkingDirectory)\playwright-report\index.html'
+      
