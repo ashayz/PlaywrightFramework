@@ -49,7 +49,7 @@ PlaywrightFramework/
 │   └── results.xml              # JUnit XML format results
 │
 ├── YAML Files/                    # YAML test data files
-│   └── supplychain/              # Supply chain related test data
+│   └── supplychain/              
 │
 ├── playwright.config.ts           # Playwright configuration
 ├── tsconfig.json                 # TypeScript configuration
