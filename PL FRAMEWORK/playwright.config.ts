@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import 'allure-playwright';
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -25,12 +26,14 @@ export default defineConfig({
         ['junit', { outputFile: 'test-results/results.xml' }],
         ['list'],
         ['github'],
+        ['allure-playwright'],
       ]
     : [
         ['html'],
         ['json', { outputFile: 'test-results/results.json' }],
         ['junit', { outputFile: 'test-results/results.xml' }],
         ['list'],
+        ['allure-playwright'],
       ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
