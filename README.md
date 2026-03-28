@@ -1,6 +1,6 @@
 # Automation Playwright Framework
 
-A robust Playwright automation framework for testing web applications including GEP and Swaglabs. Built with TypeScript, utilizing the Page Object Model (POM) design pattern, and featuring comprehensive test reporting capabilities.
+A robust Playwright automation framework for testing web applications. Built with TypeScript, utilizing the Page Object Model (POM) design pattern, and featuring comprehensive test reporting capabilities.
 
 ## Overview
 
