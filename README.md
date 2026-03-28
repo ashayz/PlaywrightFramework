@@ -231,11 +231,7 @@ The framework includes:
 
 ## Author
 
-Your Name
-
-## License
-
-MIT
+Ashay Zemse
 
 ## Additional Resources
 
